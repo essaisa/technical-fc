@@ -15,38 +15,117 @@ type Player = {
 
 export default function PlayersPage() {
   const players: Player[] = [
-    {
-      name: "Bukayo Saka",
-      position: "RW",
-      age: 24,
-      club: "ARS",
-      country: "ENG",
-      image: "/players/saka.png",
-    },
-    {
-      name: "Cole Palmer",
-      position: "CAM",
-      age: 24,
-      club: "CHE",
-      country: "ENG",
-      image: "/players/cole_palmer.png",
-    },
-    {
-      name: "Virgil Van Dijk",
-      position: "CB",
-      age: 34,
-      club: "LIV",
-      country: "NED",
-      image: "/players/vvd.png",
-    },
-    {
-      name: "Gianluigi Donnarumma",
-      position: "GK",
-      age: 27,
-      club: "PSG",
-      country: "ITA",
-      image: "/players/donnarumma.png",
-    },
+    // ATTACKERS
+  {
+    name: "Bukayo Saka",
+    position: "RW",
+    age: 24,
+    club: "ARS",
+    country: "ENG",
+    image: "/players/saka.png",
+  },
+  {
+    name: "Mohamed Salah",
+    position: "RW",
+    age: 32,
+    club: "LIV",
+    country: "EGY",
+    image: "/players/salah.png",
+  },
+  {
+    name: "Erling Haaland",
+    position: "ST",
+    age: 25,
+    club: "MCI",
+    country: "NOR",
+    image: "/players/haaland.png",
+  },
+  {
+    name: "Morgan Rogers",
+    position: "LW",
+    age: 23,
+    club: "AVL",
+    country: "ENG",
+    image: "/players/rogers.png",
+  },
+
+  // MIDFIELDERS
+  {
+    name: "Cole Palmer",
+    position: "CAM",
+    age: 24,
+    club: "CHE",
+    country: "ENG",
+    image: "/players/cole_palmer.png",
+  },
+  {
+    name: "Bruno Fernandes",
+    position: "CAM",
+    age: 30,
+    club: "MUN",
+    country: "POR",
+    image: "/players/bruno.png",
+  },
+  {
+    name: "Declan Rice",
+    position: "CDM",
+    age: 26,
+    club: "ARS",
+    country: "ENG",
+    image: "/players/rice.png",
+  },
+  {
+    name: "Moises Caicedo",
+    position: "CDM",
+    age: 23,
+    club: "CHE",
+    country: "ECU",
+    image: "/players/caicedo.png",
+  },
+
+  // DEFENDERS
+  {
+    name: "Virgil Van Dijk",
+    position: "CB",
+    age: 34,
+    club: "LIV",
+    country: "NED",
+    image: "/players/vvd.png",
+  },
+  {
+    name: "Reece James",
+    position: "RB",
+    age: 25,
+    club: "CHE",
+    country: "ENG",
+    image: "/players/reece_james.png",
+  },
+  {
+    name: "Marc Cucurella",
+    position: "LB",
+    age: 26,
+    club: "CHE",
+    country: "ESP",
+    image: "/players/cucurella.png",
+  },
+
+  // GOALKEEPERS
+  {
+    name: "Gianluigi Donnarumma",
+    position: "GK",
+    age: 27,
+    club: "PSG",
+    country: "ITA",
+    image: "/players/donnarumma.png",
+  },
+  {
+    name: "David Raya",
+    position: "GK",
+    age: 29,
+    club: "ARS",
+    country: "ESP",
+    image: "/players/raya.png",
+  },
   ]
 
   const [shortlist, setShortlist] = useState<Player[]>([])
@@ -60,7 +139,7 @@ export default function PlayersPage() {
 
   const getPositionColor = (position: string) => {
     switch (position) {
-      case "FW":
+      case "ST":
       case "RW":
       case "LW":
         return "bg-blue-500"
