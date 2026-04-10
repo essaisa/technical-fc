@@ -1,65 +1,110 @@
-import Image from "next/image";
+import Image from "next/image"
+import Link from "next/link"
 
-export default function Home() {
+export default function Dashboard() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Disso
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <div className="p-8 space-y-8">
+
+      {/* 🔝 TOP ROW */}
+      <div className="flex gap-6">
+
+        {/* HERO */}
+        <div className="flex-1">
+          <div className="relative w-full h-[400px] rounded-2xl overflow-hidden">
+
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/players/cole_palmer_cele.webp"
+              alt="Cole Palmer"
+              fill
+              className="object-cover object-[center_20%]"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <div className="absolute inset-0 bg-black/50" />
+
+            <div className="absolute bottom-0 p-6 text-white">
+              <h2 className="text-3xl font-bold">Cole Palmer</h2>
+              <p className="text-sm">Player Spotlight</p>
+
+              <Link href="/playerInfo">
+                <button className="mt-4 px-4 py-2 bg-white text-black rounded-lg font-bold">
+                  View Player
+                </button>
+              </Link>
+            </div>
+
+          </div>
         </div>
-      </main>
+
+        {/* TABLE */}
+        <div className="w-[300px] hidden lg:block">
+          <div className="p-4 border rounded-xl bg-white dark:bg-zinc-900 h-[400px] overflow-y-auto">
+            <h2 className="font-bold mb-4 text-center">Premier League</h2>
+
+            <div className="space-y-1 text-sm">
+              {[
+                "Arsenal",
+                "Man City",
+                "Liverpool",
+                "Aston Villa",
+                "Tottenham",
+                "Chelsea",
+                "Newcastle",
+                "Brighton",
+                "Man United",
+                "West Ham",
+              ].map((team, i) => (
+                <div key={i} className="flex justify-between border-b py-1">
+                  <span>{i + 1}. {team}</span>
+                  <span>{70 - i * 3} pts</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* 🔽 MINI CARDS (FULL WIDTH BELOW) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div className="p-4 border rounded-xl bg-white dark:bg-zinc-900">
+          <h2 className="font-bold mb-3">Top Players</h2>
+          <p className="text-sm">🔥 Palmer, Saka, Bellingham</p>
+        </div>
+
+        <div className="p-4 border rounded-xl bg-white dark:bg-zinc-900">
+          <h2 className="font-bold mb-3">Recent Players</h2>
+          <p className="text-sm">Palmer, Van Dijk, Donnarumma</p>
+        </div>
+
+        <div className="p-4 border rounded-xl bg-white dark:bg-zinc-900">
+          <h2 className="font-bold mb-3">Quick Actions</h2>
+          <p className="text-sm">Search • Compare • Shortlist</p>
+        </div>
+      </div>
+
+            {/* 🔽 FIXTURES CARD */}
+      <div className="p-4 border rounded-xl bg-white dark:bg-zinc-900">
+        <h2 className="font-bold mb-4">Upcoming Fixtures</h2>
+
+        <div className="space-y-3 text-sm">
+
+          {[
+            { home: "Arsenal", away: "Chelsea", time: "Sat 12:30" },
+            { home: "Liverpool", away: "Spurs", time: "Sat 17:30" },
+            { home: "Man City", away: "Newcastle", time: "Sun 14:00" },
+            { home: "Brighton", away: "Villa", time: "Sun 16:30" },
+            { home: "Man United", away: "West Ham", time: "Mon 20:00" },
+          ].map((fixture, i) => (
+            <div key={i} className="flex justify-between border-b pb-2">
+              <span>
+                {fixture.home} vs {fixture.away}
+              </span>
+              <span className="text-gray-500">{fixture.time}</span>
+            </div>
+          ))}
+        </div>
     </div>
-  );
+    </div>
+  )
 }
