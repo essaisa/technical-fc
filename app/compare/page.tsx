@@ -98,7 +98,7 @@ const players: Player[] = [
   },
   {
     name: "Harry Kane",
-    position: "FW",
+    position: "ST",
     age: 31,
     image: "/players/harry_kane.png",
     apps: 320,
@@ -241,7 +241,7 @@ const players: Player[] = [
 ]
 
 const getPlayerGroup = (position: string) => {
-  if (["FW", "RW", "LW", "CAM"].includes(position)) return "ATT"
+  if (["ST", "RW", "LW", "CAM"].includes(position)) return "ATT"
   if (["CM", "CDM"].includes(position)) return "MID"
   if (["CB", "LB", "RB"].includes(position)) return "DEF"
   if (["GK"].includes(position)) return "GK"

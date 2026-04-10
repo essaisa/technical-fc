@@ -22,8 +22,9 @@ export default function Dashboard() {
             <div className="absolute inset-0 bg-black/50" />
 
             <div className="absolute bottom-0 p-6 text-white">
-              <h2 className="text-3xl font-bold">Cole Palmer</h2>
               <p className="text-sm">Player Spotlight</p>
+              <h2 className="text-3xl font-bold">Cole Palmer</h2>
+              <p className="text-xs">Chelsea • England</p>
 
               <Link href="/playerInfo">
                 <button className="mt-4 px-4 py-2 bg-white text-black rounded-lg font-bold">

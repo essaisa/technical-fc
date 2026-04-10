@@ -26,9 +26,9 @@ const radarData = [
   ]
   
   const transferValueData = [
-    { season: "2022/23", value: 18 },
-    { season: "2023/24", value: 35 },
-    { season: "2024/25", value: 65 },
+    { season: "22/23", value: 18 },
+    { season: "23/24", value: 35 },
+    { season: "24/25", value: 65 },
   ]
 
 export default function PlayerInfo() {

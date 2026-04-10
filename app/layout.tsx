@@ -34,21 +34,35 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${pressStart.className} antialiased bg-zinc-50 text-black dark:bg-black dark:text-white`}
       >
         <div className="min-h-screen">
-          <nav className="border-b bg-white dark:bg-zinc-900">
-            <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-              <Link href="/" className="text-xl font-bold">
-                Technical FC
-              </Link>
+        <nav className="border-b bg-white dark:bg-zinc-900">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
 
-              <div className="flex gap-6 text-sm">
-                <Link href="/">Dashboard</Link>
-                <Link href="/players">Players</Link>
-                <Link href="/compare">Compare</Link>
-                <Link href="/search">Search</Link>
-                <Link href="/shortlist">Shortlist</Link>
-              </div>
+            {/* LEFT */}
+            <Link href="/" className="text-xl font-bold">
+              Technical FC
+            </Link>
+
+            {/* CENTER LINKS */}
+            <div className="flex gap-6 text-sm items-center">
+              <Link href="/">Dashboard</Link>
+              <Link href="/players">Players</Link>
+              <Link href="/compare">Compare</Link>
+              <Link href="/search">Search</Link>
+              <Link href="/shortlist">Shortlist</Link>
             </div>
-          </nav>
+
+            {/* RIGHT AUTH */}
+            <div>
+              <Link
+                href="/auth"
+                className="px-3 py-1 border rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 text-sm"
+              >
+                Login
+              </Link>
+            </div>
+
+          </div>
+        </nav>
 
           <main className="mx-auto max-w-6xl px-6 py-8">
             {children}
