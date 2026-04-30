@@ -210,13 +210,14 @@ export default function PlayersPage() {
         </div>
 
         {/* HEADER */}
-        <div className="grid grid-cols-[10px_2fr_1fr_1fr_1fr_1fr_70px] items-center border-b p-2 font-bold gap-4">
+        <div className="grid grid-cols-[10px_2fr_1fr_1fr_1fr_1fr_100px_70px] items-center border-b p-2 font-bold gap-4">
           <span></span>
           <span>Name</span>
           <span>Position</span>
           <span>Age</span>
           <span>Club</span>
           <span>Country</span>
+          <span className="text-center">Profile</span>
           <span className="text-center">Star</span>
         </div>
 
@@ -224,7 +225,7 @@ export default function PlayersPage() {
         {players.map((player, index) => (
           <div
             key={index}
-            className="grid grid-cols-[10px_2fr_1fr_1fr_1fr_1fr_70px] items-center border-b p-2 gap-4"
+            className="grid grid-cols-[10px_2fr_1fr_1fr_1fr_1fr_100px_70px] items-center border-b p-2 gap-4"
           >
             <div className={`h-full ${getPositionColor(player.position)}`} />
 
@@ -233,6 +234,17 @@ export default function PlayersPage() {
             <span>{player.age}</span>
             <span>{player.club}</span>
             <span>{player.country}</span>
+
+            <div className="flex justify-center">
+              <Link
+                href={`/players/${player.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+                className="px-3 py-1 text-xs border rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                View
+              </Link>
+            </div>
 
             <div className="flex justify-center">
               <button

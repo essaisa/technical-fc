@@ -1,10 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../app/generated/prisma"
 }
 
@@ -12,10 +7,38 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  password  String
+  username  String?     @unique
+  createdAt DateTime    @default(now())
+  shortlist Shortlist[]
+}
+
 model Player {
-  id        Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
+  slug      String   @unique
   age       Int
   position  String
   club      String
+  country   String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shortlistEntries Shortlist[]
+}
+
+model Shortlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  playerId  Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, playerId])
 }
