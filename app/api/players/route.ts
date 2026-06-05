@@ -1,25 +1,36 @@
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
 
 export async function GET() {
-  const players = await prisma.player.findMany()
-  return Response.json(players)
-}
-
-export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const positionOrder: Record<string, number> = {
+      ST: 1,
+      RW: 2,
+      LW: 3,
+      CAM: 4,
+      CM: 5,
+      CDM: 6,
+      RB: 7,
+      LB: 8,
+      CB: 9,
+      GK: 10,
+    }
+    
+    const players = await prisma.player.findMany()
+    
+    players.sort(
+      (a, b) =>
+        (positionOrder[a.position] || 999) -
+        (positionOrder[b.position] || 999)
+    )
 
-    const player = await prisma.player.create({
-      data: {
-        name: body.name,
-        age: body.age,
-        position: body.position,
-        club: body.club,
-      },
-    })
-
-    return Response.json(player)
+    return NextResponse.json(players)
   } catch (error) {
-    return Response.json({ error: "Failed to create player" }, { status: 500 })
+    console.error("PLAYERS FETCH ERROR:", error)
+
+    return NextResponse.json(
+      { message: "Failed to fetch players" },
+      { status: 500 }
+    )
   }
 }

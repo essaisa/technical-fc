@@ -5,136 +5,54 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 
 type Player = {
+  id: number
   name: string
+  slug: string
   position: string
   age: number
   club: string
   country: string
-  image?: string
+  image: string | null
+}
+
+type ShortlistEntry = {
+  id: number
+  playerId: number
+  player: Player
 }
 
 export default function PlayersPage() {
-  const players: Player[] = [
-    // ATTACKERS
-  {
-    name: "Bukayo Saka",
-    position: "RW",
-    age: 24,
-    club: "ARS",
-    country: "ENG",
-    image: "/players/saka.png",
-  },
-  {
-    name: "Mohamed Salah",
-    position: "RW",
-    age: 32,
-    club: "LIV",
-    country: "EGY",
-    image: "/players/salah.png",
-  },
-  {
-    name: "Erling Haaland",
-    position: "ST",
-    age: 25,
-    club: "MCI",
-    country: "NOR",
-    image: "/players/haaland.png",
-  },
-  {
-    name: "Morgan Rogers",
-    position: "LW",
-    age: 23,
-    club: "AVL",
-    country: "ENG",
-    image: "/players/rogers.png",
-  },
-
-  // MIDFIELDERS
-  {
-    name: "Cole Palmer",
-    position: "CAM",
-    age: 24,
-    club: "CHE",
-    country: "ENG",
-    image: "/players/cole_palmer.png",
-  },
-  {
-    name: "Bruno Fernandes",
-    position: "CAM",
-    age: 30,
-    club: "MUN",
-    country: "POR",
-    image: "/players/bruno.png",
-  },
-  {
-    name: "Declan Rice",
-    position: "CDM",
-    age: 26,
-    club: "ARS",
-    country: "ENG",
-    image: "/players/rice.png",
-  },
-  {
-    name: "Moises Caicedo",
-    position: "CDM",
-    age: 23,
-    club: "CHE",
-    country: "ECU",
-    image: "/players/caicedo.png",
-  },
-
-  // DEFENDERS
-  {
-    name: "Virgil Van Dijk",
-    position: "CB",
-    age: 34,
-    club: "LIV",
-    country: "NED",
-    image: "/players/vvd.png",
-  },
-  {
-    name: "Reece James",
-    position: "RB",
-    age: 25,
-    club: "CHE",
-    country: "ENG",
-    image: "/players/reece_james.png",
-  },
-  {
-    name: "Marc Cucurella",
-    position: "LB",
-    age: 26,
-    club: "CHE",
-    country: "ESP",
-    image: "/players/cucurella.png",
-  },
-
-  // GOALKEEPERS
-  {
-    name: "Gianluigi Donnarumma",
-    position: "GK",
-    age: 27,
-    club: "PSG",
-    country: "ITA",
-    image: "/players/donnarumma.png",
-  },
-  {
-    name: "David Raya",
-    position: "GK",
-    age: 29,
-    club: "ARS",
-    country: "ESP",
-    image: "/players/raya.png",
-  },
-  ]
-
-  const [shortlist, setShortlist] = useState<Player[]>([])
+  const [players, setPlayers] = useState<Player[]>([])
+  const [shortlist, setShortlist] = useState<ShortlistEntry[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem("shortlist")
-    if (stored) {
-      setShortlist(JSON.parse(stored))
+    const fetchData = async () => {
+      const token = localStorage.getItem("token")
+
+      try {
+        const playersRes = await fetch("/api/players")
+        const playersData = await playersRes.json()
+        setPlayers(playersData)
+
+        if (token) {
+          const shortlistRes = await fetch("/api/shortlist", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+
+          const shortlistData = await shortlistRes.json()
+          setShortlist(shortlistData)
+        }
+      } catch (error) {
+        console.error("PLAYERS PAGE FETCH ERROR:", error)
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchData()
   }, [])
 
   const getPositionColor = (position: string) => {
@@ -158,21 +76,52 @@ export default function PlayersPage() {
     }
   }
 
-  const isShortlisted = (name: string) => {
-    return shortlist.some((player) => player.name === name)
+  const isShortlisted = (playerId: number) => {
+    return shortlist.some((entry) => entry.playerId === playerId)
   }
 
-  const toggleShortlist = (player: Player) => {
-    let updated: Player[]
+  const toggleShortlist = async (player: Player) => {
+    const token = localStorage.getItem("token")
 
-    if (isShortlisted(player.name)) {
-      updated = shortlist.filter((p) => p.name !== player.name)
-    } else {
-      updated = [...shortlist, player]
+    if (!token) {
+      alert("Please log in to shortlist players.")
+      return
     }
 
-    setShortlist(updated)
-    localStorage.setItem("shortlist", JSON.stringify(updated))
+    try {
+      if (isShortlisted(player.id)) {
+        await fetch("/api/shortlist", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ playerId: player.id }),
+        })
+
+        setShortlist((current) =>
+          current.filter((entry) => entry.playerId !== player.id)
+        )
+      } else {
+        const res = await fetch("/api/shortlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ playerId: player.id }),
+        })
+
+        const newEntry = await res.json()
+        setShortlist((current) => [...current, newEntry])
+      }
+    } catch (error) {
+      console.error("SHORTLIST TOGGLE ERROR:", error)
+    }
+  }
+
+  if (loading) {
+    return <div className="p-8">Loading players...</div>
   }
 
   return (
@@ -191,9 +140,11 @@ export default function PlayersPage() {
           <h2 className="text-3xl font-bold">Michael Olise</h2>
           <p className="text-sm">FC Bayern Munich • France</p>
 
-          <button className="mt-4 px-4 py-2 bg-white text-black rounded-lg font-bold">
-            View Player
-          </button>
+          <Link href="/players/michael-olise">
+            <button className="mt-4 px-4 py-2 bg-white text-black rounded-lg font-bold">
+              View Player
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -209,7 +160,6 @@ export default function PlayersPage() {
           </Link>
         </div>
 
-        {/* HEADER */}
         <div className="grid grid-cols-[10px_2fr_1fr_1fr_1fr_1fr_100px_70px] items-center border-b p-2 font-bold gap-4">
           <span></span>
           <span>Name</span>
@@ -221,10 +171,9 @@ export default function PlayersPage() {
           <span className="text-center">Star</span>
         </div>
 
-        {/* ROWS */}
-        {players.map((player, index) => (
+        {players.map((player) => (
           <div
-            key={index}
+            key={player.id}
             className="grid grid-cols-[10px_2fr_1fr_1fr_1fr_1fr_100px_70px] items-center border-b p-2 gap-4"
           >
             <div className={`h-full ${getPositionColor(player.position)}`} />
@@ -237,9 +186,7 @@ export default function PlayersPage() {
 
             <div className="flex justify-center">
               <Link
-                href={`/players/${player.name
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
+                href={`/players/${player.slug}`}
                 className="px-3 py-1 text-xs border rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-900"
               >
                 View
@@ -250,7 +197,7 @@ export default function PlayersPage() {
               <button
                 onClick={() => toggleShortlist(player)}
                 className={`text-2xl leading-none transition-transform hover:scale-110 ${
-                  isShortlisted(player.name)
+                  isShortlisted(player.id)
                     ? "text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]"
                     : "text-zinc-400"
                 }`}

@@ -20,11 +20,26 @@ model Player {
   id        Int      @id @default(autoincrement())
   name      String
   slug      String   @unique
+
   age       Int
   position  String
+  role      String
   club      String
   country   String
   image     String?
+
+  apps      Int?
+  goals     Int?
+  assists   Int?
+  rating    Float?
+  minutes   Int?
+
+  fifaStats      Json?
+  radarStats     Json?
+  compareStats   Json?
+  transferValues Json?
+  lastGames      Json?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

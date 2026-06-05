@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import {
   Radar,
@@ -14,15 +14,17 @@ import {
 } from "recharts"
 
 type Player = {
+  id: number
   name: string
+  slug: string
   position: string
   age: number
-  image: string
-  apps: number
-  goals: number
-  assists: number
-  rating?: number
-  minutes?: number
+  image: string | null
+  apps: number | null
+  goals: number | null
+  assists: number | null
+  rating?: number | null
+  minutes?: number | null
 
   touches?: number
   shotAttempts?: number
@@ -55,196 +57,11 @@ type Player = {
   longPassAccuracy?: number
 }
 
-const players: Player[] = [
-  {
-    name: "Bukayo Saka",
-    position: "RW",
-    age: 24,
-    image: "/players/saka.png",
-    apps: 222,
-    goals: 59,
-    assists: 48,
-    rating: 7.7,
-    minutes: 16890,
-    touches: 69,
-    shotAttempts: 86,
-    goalThreat: 78,
-    chancesCreated: 68,
-    aerialDuelsWon: 12,
-    defensiveContributions: 35,
-    dribbles: 88,
-    keyPasses: 79,
-    passAccuracy: 84,
-  },
-  {
-    name: "Cole Palmer",
-    position: "CAM",
-    age: 24,
-    image: "/players/cole_palmer.png",
-    apps: 109,
-    goals: 46,
-    assists: 21,
-    rating: 7.8,
-    minutes: 8120,
-    touches: 72,
-    shotAttempts: 80,
-    goalThreat: 74,
-    chancesCreated: 85,
-    aerialDuelsWon: 8,
-    defensiveContributions: 41,
-    dribbles: 84,
-    keyPasses: 90,
-    passAccuracy: 86,
-  },
-  {
-    name: "Harry Kane",
-    position: "ST",
-    age: 31,
-    image: "/players/harry_kane.png",
-    apps: 320,
-    goals: 213,
-    assists: 52,
-    rating: 8.1,
-    minutes: 25500,
-    touches: 64,
-    shotAttempts: 94,
-    goalThreat: 96,
-    chancesCreated: 71,
-    aerialDuelsWon: 67,
-    defensiveContributions: 28,
-    dribbles: 62,
-    keyPasses: 74,
-    passAccuracy: 82,
-  },
-  {
-    name: "Pedri",
-    position: "CM",
-    age: 22,
-    image: "/players/pedri.png",
-    apps: 188,
-    goals: 19,
-    assists: 24,
-    rating: 7.6,
-    minutes: 13640,
-    touches: 92,
-    passing: 94,
-    chancesCreated: 81,
-    ballWinning: 63,
-    aerialDuelsWon: 18,
-    goalThreat: 49,
-    passAccuracy: 92,
-    progressivePasses: 87,
-    dribbles: 73,
-  },
-  {
-    name: "Virgil Van Dijk",
-    position: "CB",
-    age: 34,
-    image: "/players/vvd.png",
-    apps: 301,
-    goals: 24,
-    assists: 9,
-    rating: 7.5,
-    minutes: 24870,
-    tackles: 72,
-    interceptions: 75,
-    aerialDuelsWon: 95,
-    clearances: 88,
-    passing: 84,
-    defensiveContributions: 91,
-    blocks: 67,
-    recoveries: 83,
-    passAccuracy: 89,
-  },
-  {
-    name: "William Saliba",
-    position: "CB",
-    age: 24,
-    image: "/players/saliba.png",
-    apps: 190,
-    goals: 8,
-    assists: 4,
-    rating: 7.4,
-    minutes: 15480,
-    tackles: 78,
-    interceptions: 79,
-    aerialDuelsWon: 84,
-    clearances: 82,
-    passing: 87,
-    defensiveContributions: 86,
-    blocks: 64,
-    recoveries: 81,
-    passAccuracy: 91,
-  },
-  {
-    name: "Gianluigi Donnarumma",
-    position: "GK",
-    age: 27,
-    image: "/players/donnarumma.png",
-    apps: 280,
-    goals: 0,
-    assists: 0,
-    rating: 7.2,
-    minutes: 23400,
-    saves: 86,
-    claims: 73,
-    distribution: 68,
-    reflexes: 91,
-    oneVsOne: 84,
-    aerialCommand: 78,
-    cleanSheets: 108,
-    savePercentage: 77,
-    longPassAccuracy: 63,
-  },
-  {
-    name: "David Raya",
-    position: "GK",
-    age: 29,
-    image: "/players/raya.png",
-    apps: 215,
-    goals: 0,
-    assists: 1,
-    rating: 7.3,
-    minutes: 18210,
-    saves: 81,
-    claims: 77,
-    distribution: 88,
-    reflexes: 84,
-    oneVsOne: 79,
-    aerialCommand: 74,
-    cleanSheets: 83,
-    savePercentage: 74,
-    longPassAccuracy: 81,
-  },
-  {
-    name: "Vitinha",
-    position: "CM",
-    age: 25,
-    image: "/players/vitinha.png",
-    apps: 210,
-    goals: 18,
-    assists: 20,
-    rating: 7.7,
-    minutes: 16340,
-  
-    touches: 94,
-    passing: 93,
-    chancesCreated: 78,
-    ballWinning: 66,
-    aerialDuelsWon: 14,
-    goalThreat: 52,
-  
-    passAccuracy: 92,
-    progressivePasses: 90,
-    dribbles: 76,
-  },
-]
-
 const getPlayerGroup = (position: string) => {
   if (["ST", "RW", "LW", "CAM"].includes(position)) return "ATT"
   if (["CM", "CDM"].includes(position)) return "MID"
   if (["CB", "LB", "RB"].includes(position)) return "DEF"
-  if (["GK"].includes(position)) return "GK"
+  if (position === "GK") return "GK"
   return "OTHER"
 }
 
@@ -283,24 +100,89 @@ const radarMetricsByGroup = {
   ],
 } as const
 
+const mapPlayer = (player: any): Player => ({
+  id: player.id,
+  name: player.name,
+  slug: player.slug,
+  position: player.position,
+  age: player.age,
+  image: player.image,
+  apps: player.apps,
+  goals: player.goals,
+  assists: player.assists,
+  rating: player.rating,
+  minutes: player.minutes,
+  ...(player.compareStats || {}),
+})
+
 export default function ComparePage() {
+  const [players, setPlayers] = useState<Player[]>([])
   const [query, setQuery] = useState("")
   const [activeSlot, setActiveSlot] = useState<1 | 2 | null>(null)
   const [player1, setPlayer1] = useState<Player | null>(null)
   const [player2, setPlayer2] = useState<Player | null>(null)
 
-  const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(query.toLowerCase())
-  )
+  useEffect(() => {
+    const searchPlayers = async () => {
+      if (!query.trim()) {
+        setPlayers([])
+        return
+      }
 
-  const selectPlayer = (player: Player) => {
-    if (activeSlot === 1) setPlayer1(player)
-    if (activeSlot === 2) setPlayer2(player)
-    setActiveSlot(null)
-    setQuery("")
+      try {
+        const res = await fetch(
+          `/api/players/search?q=${encodeURIComponent(query)}`
+        )
+
+        if (!res.ok) throw new Error("Failed to search players")
+
+        const data = await res.json()
+        setPlayers(data.map(mapPlayer))
+      } catch (error) {
+        console.error("COMPARE SEARCH ERROR:", error)
+      }
+    }
+
+    const timeout = setTimeout(searchPlayers, 300)
+    return () => clearTimeout(timeout)
+  }, [query])
+
+  const selectPlayer = async (player: Player) => {
+    try {
+      if (activeSlot === 1 && player2) {
+        const res = await fetch(
+          `/api/compare?player1=${player.slug}&player2=${player2.slug}`
+        )
+
+        const data = await res.json()
+        const mapped = data.map(mapPlayer)
+
+        setPlayer1(mapped.find((p: Player) => p.slug === player.slug) || null)
+        setPlayer2(mapped.find((p: Player) => p.slug === player2.slug) || null)
+      } else if (activeSlot === 2 && player1) {
+        const res = await fetch(
+          `/api/compare?player1=${player1.slug}&player2=${player.slug}`
+        )
+
+        const data = await res.json()
+        const mapped = data.map(mapPlayer)
+
+        setPlayer1(mapped.find((p: Player) => p.slug === player1.slug) || null)
+        setPlayer2(mapped.find((p: Player) => p.slug === player.slug) || null)
+      } else {
+        if (activeSlot === 1) setPlayer1(player)
+        if (activeSlot === 2) setPlayer2(player)
+      }
+
+      setActiveSlot(null)
+      setQuery("")
+      setPlayers([])
+    } catch (error) {
+      console.error("COMPARE FETCH ERROR:", error)
+    }
   }
 
-  const getBetter = (a?: number, b?: number) => {
+  const getBetter = (a?: number | null, b?: number | null) => {
     if (a == null || b == null) return ""
     if (a > b) return "text-green-500 font-bold"
     if (a < b) return "text-red-500"
@@ -330,8 +212,8 @@ export default function ComparePage() {
     p2,
   }: {
     label: string
-    p1?: number
-    p2?: number
+    p1?: number | null
+    p2?: number | null
   }) => (
     <div className="grid grid-cols-3 text-center">
       <span className={getBetter(p1, p2)}>{p1 ?? "-"}</span>
@@ -373,11 +255,11 @@ export default function ComparePage() {
           />
 
           <div className="border rounded">
-            {filteredPlayers.map((player, index) => (
+            {players.map((player) => (
               <div
-                key={index}
+                key={player.id}
                 onClick={() => selectPlayer(player)}
-                className="p-2 border-b cursor-pointer hover:bg-gray-100"
+                className="p-2 border-b cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-900"
               >
                 {player.name} — {player.position}
               </div>
@@ -391,7 +273,7 @@ export default function ComparePage() {
           <div className="grid grid-cols-2 gap-6 mb-6 text-center">
             <div className="p-4 border rounded-xl">
               <Image
-                src={player1.image}
+                src={player1.image || "/players/default.png"}
                 alt={player1.name}
                 width={100}
                 height={100}
@@ -403,7 +285,7 @@ export default function ComparePage() {
 
             <div className="p-4 border rounded-xl">
               <Image
-                src={player2.image}
+                src={player2.image || "/players/default.png"}
                 alt={player2.name}
                 width={100}
                 height={100}
@@ -417,14 +299,14 @@ export default function ComparePage() {
           {!sameGroup && (
             <div className="p-4 border rounded-xl bg-red-50 text-red-700 mb-6">
               These players are in different role groups, so radar comparison is disabled.
-              Compare attacker vs attacker, midfielder vs midfielder, defender vs defender,
-              or goalkeeper vs goalkeeper.
             </div>
           )}
 
           {sameGroup && (
             <div className="p-4 border rounded-xl mb-6">
-              <h2 className="text-lg font-bold mb-4 text-center">Radar Comparison</h2>
+              <h2 className="text-lg font-bold mb-4 text-center">
+                Radar Comparison
+              </h2>
 
               <div className="w-full h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -464,28 +346,34 @@ export default function ComparePage() {
                 <StatRow label="Age" p1={player1.age} p2={player2.age} />
                 <StatRow label="Rating" p1={player1.rating} p2={player2.rating} />
                 <StatRow label="Minutes" p1={player1.minutes} p2={player2.minutes} />
+                <StatRow label="Goals" p1={player1.goals} p2={player2.goals} />
+                <StatRow label="Assists" p1={player1.assists} p2={player2.assists} />
               </div>
             </div>
 
             {player1Group === "ATT" && player2Group === "ATT" && (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Attacking Output</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Attacking Output
+                  </h2>
                   <div className="space-y-2">
-                    <StatRow label="Goals" p1={player1.goals} p2={player2.goals} />
-                    <StatRow label="Assists" p1={player1.assists} p2={player2.assists} />
                     <StatRow label="Shot Attempts" p1={player1.shotAttempts} p2={player2.shotAttempts} />
                     <StatRow label="Goal Threat" p1={player1.goalThreat} p2={player2.goalThreat} />
+                    <StatRow label="Chances Created" p1={player1.chancesCreated} p2={player2.chancesCreated} />
+                    <StatRow label="Aerial Duels" p1={player1.aerialDuelsWon} p2={player2.aerialDuelsWon} />
                   </div>
                 </div>
 
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Chance Creation</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Chance Creation
+                  </h2>
                   <div className="space-y-2">
-                    <StatRow label="Chances Created" p1={player1.chancesCreated} p2={player2.chancesCreated} />
                     <StatRow label="Key Passes" p1={player1.keyPasses} p2={player2.keyPasses} />
                     <StatRow label="Dribbles" p1={player1.dribbles} p2={player2.dribbles} />
                     <StatRow label="Pass Accuracy" p1={player1.passAccuracy} p2={player2.passAccuracy} />
+                    <StatRow label="Def. Work" p1={player1.defensiveContributions} p2={player2.defensiveContributions} />
                   </div>
                 </div>
               </div>
@@ -494,7 +382,9 @@ export default function ComparePage() {
             {player1Group === "MID" && player2Group === "MID" && (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Midfield Play</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Midfield Play
+                  </h2>
                   <div className="space-y-2">
                     <StatRow label="Touches" p1={player1.touches} p2={player2.touches} />
                     <StatRow label="Passing" p1={player1.passing} p2={player2.passing} />
@@ -504,7 +394,9 @@ export default function ComparePage() {
                 </div>
 
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Creation & Ball Work</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Creation & Ball Work
+                  </h2>
                   <div className="space-y-2">
                     <StatRow label="Chances Created" p1={player1.chancesCreated} p2={player2.chancesCreated} />
                     <StatRow label="Ball Winning" p1={player1.ballWinning} p2={player2.ballWinning} />
@@ -518,7 +410,9 @@ export default function ComparePage() {
             {player1Group === "DEF" && player2Group === "DEF" && (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Defending</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Defending
+                  </h2>
                   <div className="space-y-2">
                     <StatRow label="Tackles" p1={player1.tackles} p2={player2.tackles} />
                     <StatRow label="Interceptions" p1={player1.interceptions} p2={player2.interceptions} />
@@ -528,7 +422,9 @@ export default function ComparePage() {
                 </div>
 
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Possession & Duels</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Possession & Duels
+                  </h2>
                   <div className="space-y-2">
                     <StatRow label="Aerial Duels" p1={player1.aerialDuelsWon} p2={player2.aerialDuelsWon} />
                     <StatRow label="Recoveries" p1={player1.recoveries} p2={player2.recoveries} />
@@ -542,7 +438,9 @@ export default function ComparePage() {
             {player1Group === "GK" && player2Group === "GK" && (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Shot Stopping</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Shot Stopping
+                  </h2>
                   <div className="space-y-2">
                     <StatRow label="Saves" p1={player1.saves} p2={player2.saves} />
                     <StatRow label="Save %" p1={player1.savePercentage} p2={player2.savePercentage} />
@@ -552,7 +450,9 @@ export default function ComparePage() {
                 </div>
 
                 <div className="p-4 border rounded-xl">
-                  <h2 className="text-lg font-bold mb-4 text-center">Command & Distribution</h2>
+                  <h2 className="text-lg font-bold mb-4 text-center">
+                    Command & Distribution
+                  </h2>
                   <div className="space-y-2">
                     <StatRow label="Claims" p1={player1.claims} p2={player2.claims} />
                     <StatRow label="Aerial Cmd" p1={player1.aerialCommand} p2={player2.aerialCommand} />

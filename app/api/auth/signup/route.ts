@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { signToken } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import bcrypt from "bcrypt"
+import { createRecord } from "@/lib/factories/createRecord"
 
 export async function POST(req: Request) {
   try {
@@ -27,12 +28,10 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        username,
-      },
+    const user = await createRecord("user", {
+      email,
+      password: hashedPassword,
+      username,
     })
 
     const token = signToken(user.id)
